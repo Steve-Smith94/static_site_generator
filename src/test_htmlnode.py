@@ -1,5 +1,7 @@
 import unittest
 from htmlnode import HTMLNode, LeafNode, ParentNode
+from text_node import TextNode, TextType
+from main import text_node_to_html_node
 
 # Test class for HTMLNode
 class TestHTMLNode(unittest.TestCase):
@@ -64,6 +66,53 @@ class TestParentNode(unittest.TestCase):
             "<div><span><b>grandchild</b></span></div>",
         )
 
+class Test_node_to_html_node(unittest.TestCase):
+    def test_text(self):
+        node = TextNode("This is a text node", TextType.TEXT)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, None)
+        self.assertEqual(html_node.value, "This is a text node")
+
+    def test_text_bold(self):
+        node = TextNode("This is a text node", TextType.BOLD)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "b")
+        self.assertEqual(html_node.value, "This is a text node")
+
+    def test_text_italic(self):
+        node = TextNode("This is a text node", TextType.ITALIC)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "i")
+        self.assertEqual(html_node.value, "This is a text node")
+
+    def test_text_code(self):
+        node = TextNode("This is a text node", TextType.CODE)
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "code")
+        self.assertEqual(html_node.value, "This is a text node")
+
+    def test_text_link(self):
+        node = TextNode("Go to Boot.dev", TextType.LINK, "https://www.boot.dev")
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "a")
+        self.assertEqual(html_node.value, "Go to Boot.dev")
+        self.assertDictEqual(html_node.props, {"href": "https://www.boot.dev"})
+
+    def test_text_image(self):
+        node = TextNode("A beautiful sunset", TextType.IMAGE, "https://example.com/image.jpg")
+        html_node = text_node_to_html_node(node)
+        self.assertEqual(html_node.tag, "img")
+        self.assertEqual(html_node.value, "")
+        self.assertDictEqual(html_node.props, {"src": "https://example.com/image.jpg", "alt": "A beautiful sunset"})
+
+    def test_unsupported_type_raises_exception(self):
+        class UnknownTextType: # A dummy class to represent an unknown type
+            pass
+        
+        node = TextNode("Unknown text", UnknownTextType()) 
+        
+        with self.assertRaises(Exception) as cm: # You used Exception, so we check for that
+            text_node_to_html_node(node)
 
 if __name__ == "__main__":
     unittest.main()
