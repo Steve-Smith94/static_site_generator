@@ -55,3 +55,23 @@ class LeafNode(HTMLNode):
         # Otherwise, build the HTML string: <tag props>value</tag>
         # self.props_to_html() returns the attributes or an empty string
         return f"<{self.tag}{self.props_to_html()}>{self.value}</{self.tag}>"
+
+class ParentNode(HTMLNode):
+    def __init__(self, tag, children, props=None):
+        super().__init__(tag, None, children, props)
+
+    def to_html(self):
+        if not self.tag:
+            raise ValueError("No tag")
+        
+        if not self.children:
+            raise ValueError("No children")
+        
+        children = []
+        for child in self.children:
+            children.append(child.to_html())
+
+        joined_html = "".join(children)
+        return f"<{self.tag}>{joined_html}</{self.tag}>"
+
+        
