@@ -1,5 +1,5 @@
 import unittest
-from markdown_blocks import markdown_to_blocks
+from markdown_blocks import markdown_to_blocks, BlockType, block_to_block_type 
 
 class TestMarkdownToBlocks(unittest.TestCase):
     def test_basic_three_blocks(self):
@@ -70,6 +70,38 @@ A paragraph with text.
 
     def test_only_blank_lines(self):
         self.assertEqual(markdown_to_blocks("\n\n\n"), [])
+
+
+#block_to_block_type tests
+
+class TestBlockToBlockType(unittest.TestCase):
+    def test_heading_simple(self):
+        self.assertEqual(block_to_block_type("# Title"), BlockType.HEADING)
+
+    def test_code_block(self):
+        block = "```\nprint('hi')\n```"
+        self.assertEqual(block_to_block_type(block), BlockType.CODE)
+
+    def test_quote_block(self):
+        block = "> a\n> b"
+        self.assertEqual(block_to_block_type(block), BlockType.QUOTE)
+
+    def test_unordered_list(self):
+        block = "- a\n- b"
+        self.assertEqual(block_to_block_type(block), BlockType.UNORDERED_LIST)
+
+    def test_ordered_list(self):
+        block = "1. a\n2. b\n3. c"
+        self.assertEqual(block_to_block_type(block), BlockType.ORDERED_LIST)
+
+    def test_paragraph_default(self):
+        self.assertEqual(block_to_block_type("just text"), BlockType.PARAGRAPH)
+
+    def test_heading_too_many_hashes_is_paragraph(self):
+        self.assertEqual(
+            block_to_block_type("####### Too many"),
+            BlockType.PARAGRAPH,
+        )
 
 if __name__ == "__main__":
     unittest.main()
