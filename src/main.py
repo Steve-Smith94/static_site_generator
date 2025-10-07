@@ -1,22 +1,9 @@
-
-from htmlnode import ParentNode
-from markdown_blocks import markdown_to_blocks, block_to_block_type, BlockType
-from inline_markdown import text_to_textnodes, text_nodes_to_html_nodes
+from gencontent import generate_page 
+from markdown_renderer import markdown_to_html_node
 import os
 import shutil
 
-def markdown_to_html_node(markdown):
-    parent = ParentNode("div", [])
-    blocks = markdown_to_blocks(markdown.strip())
-    for block in blocks:
-        btype = block_to_block_type(block)
-        if btype == BlockType.PARAGRAPH:
-            lines = [ln.strip() for ln in block.splitlines()]
-            text = " ".join([ln for ln in lines if ln])
-            tnodes = text_to_textnodes(text)
-            children = text_nodes_to_html_nodes(tnodes)
-            parent.children.append(ParentNode("p", children))
-    return parent
+
 
 
 def copy_static_to_public(src: str, dest: str):
@@ -69,6 +56,7 @@ def _recursive_copy(current_src: str, current_dest: str):
 
 def main():
     copy_static_to_public("static", "public")
+    generate_page("content/index.md", "template.html", "public/index.html")
     print("Static site regenerated successfully!")
 
 
