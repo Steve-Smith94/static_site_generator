@@ -1,4 +1,6 @@
 from enum import Enum
+from htmlnode import HTMLNode
+
 
 class TextType(Enum):
     TEXT = "text"      # Plain text
@@ -29,6 +31,8 @@ class TextNode():
     def __repr__(self):
     # For debugging/printing: show a readable summary of this TextNode
         return f"TextNode({self.text}, {self.text_type.value}, {self.url})"
+    
+    
 
         
 

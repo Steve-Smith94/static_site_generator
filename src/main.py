@@ -1,12 +1,17 @@
-from gencontent import generate_page 
+from gencontent import generate_page, generate_pages_recursive
 from markdown_renderer import markdown_to_html_node
 import os
 import shutil
+import sys
 
 
+if len(sys.argv) > 1:
+    basepath = sys.argv[1]
+else:
+    basepath = "/"
 
 
-def copy_static_to_public(src: str, dest: str):
+def copy_static_to_docs(src: str, dest: str):
     """
     Recursively copies all contents from src to dest.
     Deletes the destination directory first.
@@ -54,9 +59,10 @@ def _recursive_copy(current_src: str, current_dest: str):
 
 
 
+
 def main():
-    copy_static_to_public("static", "public")
-    generate_page("content/index.md", "template.html", "public/index.html")
+    copy_static_to_docs("static", "docs")
+    generate_pages_recursive("content", "template.html", "docs", basepath)
     print("Static site regenerated successfully!")
 
 
